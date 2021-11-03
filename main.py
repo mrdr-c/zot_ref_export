@@ -40,13 +40,20 @@ def main():
     for coll_item in coll:
         item_keys.append(coll_item['key'])
 
-    print(item_keys)
+    print(coll)
     # print(zot.item(item_keys[0]))
 
-    print(get_config.__doc__)
-
     with open('output.json', 'w') as f:
-        f.write(json.dumps(zot.item(item_keys[0])))
+        f.write(json.dumps(coll))
+
+    # refactoring of retrieved data
+    for element in coll:
+        # debugging
+        print(element['data']['abstractNote'])
+
+        # TODO: create a class that contains the required data and make sure that there is sufficient error handling
+        # element['data']
+
 
     '''
     # DEBUGGING
@@ -65,7 +72,7 @@ def main():
 
 
 def get_config(filename):
-    """Gets the config from the specified file and returns a dict of it. Handles missing file by creating template"""
+    """Gets the config from the specified file and returns a dict of it. Handles missing file by creating template."""
 
     try:
         with open(filename, 'r') as f:
