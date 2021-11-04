@@ -1,8 +1,9 @@
-# standard library
+# Standard library imports
 import json
 import pprint
 
-# 3rd-party libraries
+# 3rd-party package imports
+from docx import Document
 from pyzotero import zotero
 
 
@@ -113,7 +114,7 @@ def set_locale(filename, loc, fallback_loc='en'):
         print(f"Missing '{filename}' file")
         exit(1)
 
-    # Trying to retrieve the specified locale setting,
+    # Trying to retrieve the specified locale setting
     try:
         locale = locale[loc]
     except KeyError:
