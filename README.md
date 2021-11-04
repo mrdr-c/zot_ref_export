@@ -6,8 +6,8 @@ This project aims to create a user-friendly interface that enables retreiving re
 - [ ] How to deal with templates? *- what did you mean by that?*
 - [x] Specify which information is relevant for references
 - [ ] Figure out how to store and retrieve the zotero item fields flexibly
-  - [ ] Make sure that the user can specify the order of the fields in the document to be created
-  - [ ] Store this information in the config file
+  - [x] Make sure that the user can specify the order of the fields in the document to be created
+  - [x] Store this information in the config file
 - [ ] Read up on docx-handling
 - [ ] Read up on PyInstaller-wrapping everything
 

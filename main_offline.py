@@ -1,3 +1,5 @@
+# OFFLINE work with sample data
+
 # Standard library imports
 import json
 import pprint
@@ -20,67 +22,54 @@ def main():
     messages = locale['messages']
     formatting = locale['formatting']
 
-    # Retrieving library
-    zot = zotero.Zotero(config['library_id'],
-                        config['library_type'],
-                        config['api_key'])
+    # = = = = = = = = = = = =
+    # Skipping retrieval via pyzotero and using the output.json file instead
+    with open('output.json', mode='r', encoding='utf-8') as f:
+        coll = json.load(f)
 
-    # Querying collection to export
-    coll_name = (input(messages['prompt_coll_name']))  # TODO: make sure that UTF-8 encoding works fine
-    coll_metadata = zot.collections(q=str.lower(coll_name))
 
-    # checking if an unambiguous collection was found
-    if len(coll_metadata) == 0:
-        print(messages['err_no_coll_found'].format(coll_name=coll_name))
-        sleep(EXIT_TIMER)
-        exit(1)
-    elif len(coll_metadata) > 1:
-        print(messages['err_ambiguous_term'].format(coll_name=coll_name, len_coll_meta=len(coll_metadata)))
-        sleep(EXIT_TIMER)
-        exit(1)
+    # TODO: Add elements to pick to config.json
 
-    # Getting collection key - returns list of dicts. If one collection is returned, it is at position 0
-    coll_key = coll_metadata[0]['key']
+    # = = = = = = = = = = = =
+    print("coll[0] is: ", coll[0]['data'])
+    testing = Entry(config, coll[0])
+    pprint.pp(testing.data)
 
-    # Checking for child collections
-    if len(zot.collections_sub(coll_key)) > 0:
-        print(messages['err_child_colls'].format(coll_name=coll_name))
-        sleep(EXIT_TIMER)
-        exit(1)
 
-    # Getting all collection items as a list of dicts
-    coll = zot.collection_items(coll_key)
+class Entry:
+    """This is a class to hold the information of each entry as it is retrieved from the collection as an element.
+    Pass a config dict and a raw entry dict to it.
+    """
+    def __init__(self, config, raw_entry):
+        # Getting the fields to fetch
+        fetch = dict()
+        for field in config['fields_to_fetch']:
+            fetch[field] = config['fields_to_fetch'][field]
+        # DEBUGGING
+        print(fetch)
 
-    # TODO: get rid of this section and work with the coll element instead
-    # OFFLINE work with sample data
+        self.data = dict()
+        for element in fetch:
+            print('fetch element is: ', element)
+            self.data[element] = self.path_item(raw_entry, fetch[element]['path'])
 
-    '''
-    with open('output.json', 'w') as f:
-        f.write(json.dumps(coll))
+        # TODO: deal with variable length contractors list
+        # TODO: deal with misc
+        # TODO: consider redesigning the ordering mechanism
 
-    # refactoring of retrieved data
-    for element in coll:
-        # debugging
-        print(element['data']['abstractNote'])
 
-        # TODO: create a class that contains the required data and make sure that there is sufficient error handling
-        # element['data']
+    def path_item(self, item, path):
+        """Recursively to the bottom of a path (array) to retrieve a dict item"""
+        # Exit condition
+        if len(path) == 0:
+            return item
 
-    
-    # DEBUGGING
-    with open('output.json', 'w') as f:
-        f.write(json.dumps(zot.collection_items(collection_key)))
-    '''
+        # Recursion logic
+        item = item.get(path.pop(0))
+        return self.path_item(item, path)
 
-    '''
-    items = zot.top(limit=15)
-    # we've retrieved the latest five top-level items in our library
-    # we can print each item's item type and ID
-    for item in items:
-        print('Item: %s | Key: %s' % (item['data']['itemType'], item['data']['key']))
-        print(item['data'])
-    '''
 
+    # = = = = = = = = = = = =
 
 def get_config(filename):
     """Gets the config from the specified file and returns a dict of it. Handles missing file by creating template."""
