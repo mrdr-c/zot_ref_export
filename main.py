@@ -1,12 +1,20 @@
-# Importing libraries
-from pyzotero import zotero
+# standard library
 import json
 import pprint
 
+# 3rd-party libraries
+from pyzotero import zotero
+
 
 def main():
-    # Getting credentials from file
+    # Loading config & setting locale
     config = get_config('config.json')
+    locale = set_locale('locale.json', config['locale'])
+    # pprint.pp(locale)
+
+    # Saving messages and formatting dicts
+    messages = locale['messages']
+    formatting = locale['formatting']
 
     # Retrieving library
     zot = zotero.Zotero(config['library_id'],
@@ -14,15 +22,15 @@ def main():
                         config['api_key'])
 
     # Querying collection to export
-    coll_name = input('Please specify the collection name: ')
+    coll_name = (input(messages['prompt_coll_name']))  # TODO: make sure that UTF-8 encoding works fine
     coll_metadata = zot.collections(q=str.lower(coll_name))
 
     # checking if an unambiguous collection was found
     if len(coll_metadata) == 0:
-        print(f"Sorry, no collection named '{coll_name}' found.")
+        print(messages['err_no_coll_found'].format(coll_name=coll_name))
         exit(1)
     elif len(coll_metadata) > 1:
-        print(f"Sorry, your search term '{coll_name}' is ambiguous as {len(coll_metadata)} collections were found. Consider renaming the collection you want to retrieve and/or use a different search term.")
+        print(messages['err_ambiguous_term'].format(coll_name=coll_name, len_coll_meta=len(coll_metadata)))
         exit(1)
 
     # Getting collection key - returns list of dicts. If one collection is returned, it is at position 0
@@ -30,7 +38,7 @@ def main():
 
     # Checking for child collections
     if len(zot.collections_sub(coll_key)) > 0:
-        print(f"The collection '{coll_name}' has child collections, which are not (yet) supported.")
+        print(messages['err_child_colls'].format(coll_name=coll_name))
         exit(1)
 
     # Getting all collection items as a list
@@ -54,7 +62,6 @@ def main():
         # TODO: create a class that contains the required data and make sure that there is sufficient error handling
         # element['data']
 
-
     '''
     # DEBUGGING
     with open('output.json', 'w') as f:
@@ -75,7 +82,7 @@ def get_config(filename):
     """Gets the config from the specified file and returns a dict of it. Handles missing file by creating template."""
 
     try:
-        with open(filename, 'r') as f:
+        with open(filename, mode='r', encoding='utf-8') as f:
             config = json.load(f)
     except FileNotFoundError:
         empty_config = {'library_id': None,
@@ -85,10 +92,38 @@ def get_config(filename):
                         }
         with open(filename, 'w') as f:
             f.write(json.dumps(empty_config))
-        print(f"The required '{filename}' was not found in the execution directory. A blank file was created.")
+        print(f"'{filename}' not found in the execution directory. A blank file was created. Consult documentation.")
         exit(1)
 
+    # TODO: Add additional checks to make sure that the fields 'library_id' and 'library_type' have the right format
+    # TODO: Figure out how to store credentials securely
+
+    # assert isinstance(config, dict)
     return config
+
+
+def set_locale(filename, loc, fallback_loc='en'):
+    """Gets locale-specific messages and formatting from json file"""
+
+    try:
+        with open(filename, mode='r', encoding='utf-8') as f:
+            locale = json.load(f)
+    except FileNotFoundError:
+        print(f"Missing '{filename}' file")
+        exit(1)
+
+    try:
+        locale = locale[loc]
+    except KeyError:
+        try:
+            locale = locale[fallback_loc]
+            print(f"Fallback locale '{fallback_loc}' set")
+        except KeyError:
+            print(f"fallback locale '{fallback_loc}' not found")
+            exit(1)
+
+    # assert isinstance(locale, dict)
+    return locale
 
 
 if __name__ == '__main__':
