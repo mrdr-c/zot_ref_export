@@ -105,6 +105,7 @@ def get_config(filename):
 def set_locale(filename, loc, fallback_loc='en'):
     """Gets locale-specific messages and formatting from json file"""
 
+    # Trying to open the specified file
     try:
         with open(filename, mode='r', encoding='utf-8') as f:
             locale = json.load(f)
@@ -112,9 +113,11 @@ def set_locale(filename, loc, fallback_loc='en'):
         print(f"Missing '{filename}' file")
         exit(1)
 
+    # Trying to retrieve the specified locale setting,
     try:
         locale = locale[loc]
     except KeyError:
+        # Trying to use the default [specified] fallback locale
         try:
             locale = locale[fallback_loc]
             print(f"Fallback locale '{fallback_loc}' set")
