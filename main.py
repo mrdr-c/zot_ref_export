@@ -18,7 +18,7 @@ def main():
     # pprint.pp(locale)
 
     # Saving messages and formatting dicts
-    messages = locale['messages']
+    user_messages = locale['messages']
     formatting = locale['formatting']
 
     # Retrieving library
@@ -27,16 +27,16 @@ def main():
                         config['api_key'])
 
     # Querying collection to export
-    coll_name = (input(messages['prompt_coll_name']))  # TODO: make sure that UTF-8 encoding works fine
+    coll_name = (input(user_messages['prompt_coll_name']))  # TODO: make sure that UTF-8 encoding works fine
     coll_metadata = zot.collections(q=str.lower(coll_name))
 
     # checking if an unambiguous collection was found
     if len(coll_metadata) == 0:
-        print(messages['err_no_coll_found'].format(coll_name=coll_name))
+        print(user_messages['err_no_coll_found'].format(coll_name=coll_name))
         sleep(EXIT_TIMER)
         exit(1)
     elif len(coll_metadata) > 1:
-        print(messages['err_ambiguous_term'].format(coll_name=coll_name, len_coll_meta=len(coll_metadata)))
+        print(user_messages['err_ambiguous_term'].format(coll_name=coll_name, len_coll_meta=len(coll_metadata)))
         sleep(EXIT_TIMER)
         exit(1)
 
@@ -45,7 +45,7 @@ def main():
 
     # Checking for child collections
     if len(zot.collections_sub(coll_key)) > 0:
-        print(messages['err_child_colls'].format(coll_name=coll_name))
+        print(user_messages['err_child_colls'].format(coll_name=coll_name))
         sleep(EXIT_TIMER)
         exit(1)
 
@@ -71,10 +71,29 @@ class Entry:
         # DEBUGGING
         print(fetch)
 
+        # saving content and the output order of elements in separate dicts
         self.data = dict()
+        self.positions = dict()
         for element in fetch:
             print('fetch element is: ', element)
             self.data[element] = self.path_item(raw_entry, fetch[element]['path'])
+
+            # Sorting the elements if their data entry isn't none
+            if self.data[element]:
+               self.positions[element] = fetch[element]['position']
+
+        self.order = list()
+        for key in self.positions:
+            # Will skip positions that can't be interpreted
+            try:
+                self.order.append(float(self.positions[key]))
+            except ValueError:
+                pass
+
+        # Sorting elements' positions (ascending order)
+        self.order.sort()
+
+
 
         # TODO: deal with variable length contractors list
         # TODO: deal with misc
@@ -89,6 +108,9 @@ class Entry:
         # Recursion logic
         item = item.get(path.pop(0))
         return self.path_item(item, path)
+
+    def process_info_str(self, info_str):
+        # TODO: finish this and add to __init__
 
 
 def get_config(filename):

@@ -4,7 +4,8 @@
     "prompt_coll_name": "Please specify the collection name: ",
     "err_no_coll_found": "No collection named '{coll_name}' found.",
     "err_ambiguous_term": "Your search term '{coll_name}' is ambiguous as {len_col_meta} collections were found. Consider renaming the collection you want to retrieve and/or use a different search term.",
-    "err_child_colls": "The collection '{coll_name}' has child collections, which are not (yet) supported."
+    "err_child_colls": "The collection '{coll_name}' has child collections, which are not (yet) supported.",
+    "err_ordering_input": "The given element order could not be interpreted. Use integers or floats with decimal delimiter '.'."
     },
     "formatting": {
       "ed": "ed.",
@@ -18,7 +19,8 @@
       "prompt_coll_name": "Name der zu ladenden Sammlung: ",
       "err_no_coll_found": "Es wurde keine Sammlung '{coll_name}' gefunden.",
       "err_ambiguous_term": "Der Suchbegriff '{coll_name}' ist mehrdeutig: es wurden {len_coll_meta} Sammlungen gefunden. Benennen Sie die Sammlung um und/oder verwenden Sie einen anderen Suchbegriff.",
-      "err_child_colls": "Die Sammlung '{coll_name}' hat Untersammlungen. Diese werden (noch) nicht unterstützt."
+      "err_child_colls": "Die Sammlung '{coll_name}' hat Untersammlungen. Diese werden (noch) nicht unterstützt.",
+      "err_ordering_input": "Die angegebene Anordnung der Elemente konnte nicht interpretiert werden. Integer oder Floats mit Dezimalzeichen '.' benutzen."
     },
     "formatting": {
       "ed": "Hrsg.",
