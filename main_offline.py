@@ -59,13 +59,14 @@ class Entry:
 
 
     def path_item(self, item, path):
-        """Recursively to the bottom of a path (array) to retrieve a dict item"""
+        """Recurse to the bottom of a path (array of dict keys) to retrieve a dict item"""
         # Exit condition
         if len(path) == 0:
             return item
 
         # Recursion logic
-        item = item.get(path.pop(0))
+        # Second argument in Dict.get() handles non-existing path and/or element
+        item = item.get(path.pop(0), 'None found')
         return self.path_item(item, path)
 
 

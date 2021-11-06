@@ -10,6 +10,7 @@ from pyzotero import zotero
 # Global variables
 EXIT_TIMER = 3
 
+
 def main():
     # Loading config & setting locale
     config = get_config('config.json')
@@ -51,35 +52,43 @@ def main():
     # Getting all collection items as a list of dicts
     coll = zot.collection_items(coll_key)
 
-    # TODO: get rid of this section and work with the coll element instead
-    # OFFLINE work with sample data
+    print("coll[0] is: ", coll[0]['data'])
+    testing = Entry(config, coll[0])
+    pprint.pp(testing.data)
 
-    '''
-    with open('output.json', 'w') as f:
-        f.write(json.dumps(coll))
+    # TODO: continue writing here
 
-    # refactoring of retrieved data
-    for element in coll:
-        # debugging
-        print(element['data']['abstractNote'])
 
-        # TODO: create a class that contains the required data and make sure that there is sufficient error handling
-        # element['data']
+class Entry:
+    """This is a class to hold the information of each entry as it is retrieved from the collection as an element.
+    Pass a config dict and a raw entry dict to it.
+    """
+    def __init__(self, config, raw_entry):
+        # Getting the fields to fetch
+        fetch = dict()
+        for field in config['fields_to_fetch']:
+            fetch[field] = config['fields_to_fetch'][field]
+        # DEBUGGING
+        print(fetch)
 
-    
-    # DEBUGGING
-    with open('output.json', 'w') as f:
-        f.write(json.dumps(zot.collection_items(collection_key)))
-    '''
+        self.data = dict()
+        for element in fetch:
+            print('fetch element is: ', element)
+            self.data[element] = self.path_item(raw_entry, fetch[element]['path'])
 
-    '''
-    items = zot.top(limit=15)
-    # we've retrieved the latest five top-level items in our library
-    # we can print each item's item type and ID
-    for item in items:
-        print('Item: %s | Key: %s' % (item['data']['itemType'], item['data']['key']))
-        print(item['data'])
-    '''
+        # TODO: deal with variable length contractors list
+        # TODO: deal with misc
+        # TODO: consider redesigning the ordering mechanism
+
+    def path_item(self, item, path):
+        """Recursively to the bottom of a path (array) to retrieve a dict item"""
+        # Exit condition
+        if len(path) == 0:
+            return item
+
+        # Recursion logic
+        item = item.get(path.pop(0))
+        return self.path_item(item, path)
 
 
 def get_config(filename):
