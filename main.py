@@ -117,11 +117,18 @@ class Entry:
     @staticmethod
     def process_info_str(info_str, kv_delimiter='=', item_delimiter=';'):
         """Takes the info string and turns it into a dict"""
+        # splitting string items
         items = info_str.replace('\n', '').split(item_delimiter)
+
+        # splitting items into key/value pairs
         items_dict = dict()
         for item in items:
             k, v = item.split(kv_delimiter)
-            items_dict[k.strip()] = v.strip()
+            v = v.strip()
+            # Turning empty and 'none' strings into None type
+            if v.lower() == 'none' or len(v) == 0:
+                v = None
+            items_dict[k.strip()] = v
 
         return items_dict
 
