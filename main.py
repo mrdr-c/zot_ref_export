@@ -1,4 +1,5 @@
 # Standard library imports
+from copy import deepcopy
 import json
 import pprint
 from time import sleep
@@ -52,12 +53,15 @@ def main():
     # Getting all collection items as a list of dicts
     coll = zot.collection_items(coll_key)
 
-    testing = Entry(config, coll[0])
-    print("type of 'testing.data' is: ", type(testing.data))
-    pprint.pp(testing.data)
-
     # TODO: continue writing here
     # TODO: Remove template entry if there is one
+
+    # Getting the items ad saving them into a dict
+    coll_items = dict()
+    i = 0
+    while i < len(coll):
+        coll_items[i] = Entry(config, coll[i-1])
+        i += 1
 
 
 class Entry:
@@ -69,7 +73,7 @@ class Entry:
         # Getting the fields to fetch
         fetch = dict()
         for field in config['fields_to_fetch']:
-            fetch[field] = config['fields_to_fetch'][field]
+            fetch[field] = deepcopy(config['fields_to_fetch'][field])
 
         # saving content and the output order of elements in separate dicts
         self.data = dict()
@@ -93,12 +97,9 @@ class Entry:
         self.order.sort()
 
         # Turning the info_string into a dict
-        print(self.data['info_string'])
         self.data['info_string'] = self.process_info_str(self.data['info_string'])
 
         # Turning the contractors dict list into a list
-        print("self.data['contractors'] is: ", self.data['contractors'])
-
         contractor_list = list()
         for contractor in self.data['contractors']:
             contractor_list.append(contractor['name'])
@@ -126,7 +127,7 @@ class Entry:
             k, v = item.split(kv_delimiter)
             v = v.strip()
             # Turning empty and 'none' strings into None type
-            if v.lower() == 'none' or len(v) == 0:
+            if v.lower() in ['none', '']:
                 v = None
             items_dict[k.strip()] = v
 

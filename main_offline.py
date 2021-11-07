@@ -62,11 +62,12 @@ class Entry:
         """Recurse to the bottom of a path (array of dict keys) to retrieve a dict item"""
         # Exit condition
         if len(path) == 0:
+            print('type of item is: ', type(item))
             return item
 
         # Recursion logic
         # Second argument in Dict.get() handles non-existing path and/or element
-        item = item.get(path.pop(0), 'None found')
+        item = item.get(path.pop(0), None)
         return self.path_item(item, path)
 
 
