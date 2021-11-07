@@ -53,16 +53,29 @@ def main():
     # Getting all collection items as a list of dicts
     coll = zot.collection_items(coll_key)
 
-    # TODO: continue writing here
     # TODO: Remove template entry if there is one
 
-    # Getting the items ad saving them into a dict
-    coll_items = dict()
+    # Getting the entries and saving them into a dict
+    coll_entries = list()
     i = 0
     while i < len(coll):
-        coll_items[i] = Entry(config, coll[i-1])
+        coll_entries.append(Entry(config, coll[i]))
         i += 1
 
+    print('executing buid_docx()')
+    build_docx(coll_entries, 'whatever', 'whateveras', 'digga')
+
+    # TODO: Check out the entry attributes order (list of floats), positions (dict) and data (dict)
+    """
+    Pseudo-code:
+    
+    funtion create document:
+        for element in order:
+            add paragraph: to_print <- get data (key = ( positions (key = (element from order))))
+        
+    """
+
+# = = = = CLASSES = = = =
 
 class Entry:
     """This is a class to hold the information of each entry as it is retrieved from the collection as an element.
@@ -83,7 +96,7 @@ class Entry:
 
             # Sorting the elements if their data entry isn't none
             if self.data[element]:
-                self.positions[element] = fetch[element]['position']
+                self.positions[fetch[element]['position']] = element
 
         self.order = list()
         for key in self.positions:
@@ -132,6 +145,27 @@ class Entry:
             items_dict[k.strip()] = v
 
         return items_dict
+
+
+# = = = = FUNCTIONS = = = = 
+
+def build_docx(entries_list, document_name, saving_location, formatting):
+    """Builds document from entries list"""
+
+    document = Document()
+
+    # HERE GOES SHIT
+    print(entries_list)
+    for entry in entries_list:
+        print(entry.order)
+        for ordinal in entry.order:
+            content = deepcopy(entry.data[entry.positions[ordinal]])
+            print(content)
+
+    return None
+
+    # Saving to downloads with specified name
+    # document.save(path.join(path.expanduser(saving_location), f'{document_name}.docx'))
 
 
 def get_config(filename):
