@@ -52,35 +52,34 @@ def main():
     # Getting all collection items as a list of dicts
     coll = zot.collection_items(coll_key)
 
-    print("coll[0] is: ", coll[0]['data'])
     testing = Entry(config, coll[0])
+    print("type of 'testing.data' is: ", type(testing.data))
     pprint.pp(testing.data)
 
     # TODO: continue writing here
+    # TODO: Remove template entry if there is one
 
 
 class Entry:
     """This is a class to hold the information of each entry as it is retrieved from the collection as an element.
     Pass a config dict and a raw entry dict to it.
     """
+
     def __init__(self, config, raw_entry):
         # Getting the fields to fetch
         fetch = dict()
         for field in config['fields_to_fetch']:
             fetch[field] = config['fields_to_fetch'][field]
-        # DEBUGGING
-        print(fetch)
 
         # saving content and the output order of elements in separate dicts
         self.data = dict()
         self.positions = dict()
         for element in fetch:
-            print('fetch element is: ', element)
             self.data[element] = self.path_item(raw_entry, fetch[element]['path'])
 
             # Sorting the elements if their data entry isn't none
             if self.data[element]:
-               self.positions[element] = fetch[element]['position']
+                self.positions[element] = fetch[element]['position']
 
         self.order = list()
         for key in self.positions:
@@ -93,11 +92,17 @@ class Entry:
         # Sorting elements' positions (ascending order)
         self.order.sort()
 
+        # Turning the info_string into a dict
+        print(self.data['info_string'])
+        self.data['info_string'] = self.process_info_str(self.data['info_string'])
 
+        # Turning the contractors dict list into a list
+        print("self.data['contractors'] is: ", self.data['contractors'])
 
-        # TODO: deal with variable length contractors list
-        # TODO: deal with misc
-        # TODO: consider redesigning the ordering mechanism
+        contractor_list = list()
+        for contractor in self.data['contractors']:
+            contractor_list.append(contractor['name'])
+        self.data['contractors'] = contractor_list
 
     def path_item(self, item, path):
         """Recursively to the bottom of a path (array) to retrieve a dict item"""
@@ -109,8 +114,16 @@ class Entry:
         item = item.get(path.pop(0))
         return self.path_item(item, path)
 
-    def process_info_str(self, info_str):
-        # TODO: finish this and add to __init__
+    @staticmethod
+    def process_info_str(info_str, kv_delimiter='=', item_delimiter=';'):
+        """Takes the info string and turns it into a dict"""
+        items = info_str.replace('\n', '').split(item_delimiter)
+        items_dict = dict()
+        for item in items:
+            k, v = item.split(kv_delimiter)
+            items_dict[k.strip()] = v.strip()
+
+        return items_dict
 
 
 def get_config(filename):
