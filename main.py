@@ -62,7 +62,7 @@ def main():
         coll_entries.append(Entry(config, coll[i]))
         i += 1
 
-    print('executing buid_docx()')
+
     build_docx(coll_entries, 'whatever', 'whateveras', 'digga')
 
     # TODO: Check out the entry attributes order (list of floats), positions (dict) and data (dict)
@@ -102,7 +102,7 @@ class Entry:
         for key in self.positions:
             # Will skip positions that can't be interpreted
             try:
-                self.order.append(float(self.positions[key]))
+                self.order.append(int(key))
             except ValueError:
                 pass
 
@@ -154,11 +154,15 @@ def build_docx(entries_list, document_name, saving_location, formatting):
 
     document = Document()
 
-    # HERE GOES SHIT
+
     print(entries_list)
+    print(len(entries_list))
     for entry in entries_list:
         print(entry.order)
         for ordinal in entry.order:
+            print('ordinal: ', ordinal)
+            print('entry.positions[ordinal]: ', entry.positions[ordinal])
+            print('entry.data[entry.positions[ordinal]]: ', entry.data[entry.positions[ordinal]])
             content = deepcopy(entry.data[entry.positions[ordinal]])
             print(content)
 
