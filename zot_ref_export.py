@@ -172,7 +172,9 @@ def build_docx(entries_list, document_name, saving_location, formatting, locale_
                 # Handling info_strings:
                 elif field_name == 'info_string':
                     for fn, ct in content.items():
-                        document.add_paragraph(f'{fn}: {ct}')
+                        # Catching None type
+                        if ct:
+                            document.add_paragraph(f'{fn}: {ct}')
                 # Handling description
                 elif field_name == 'description':
                     document.add_paragraph(content)
