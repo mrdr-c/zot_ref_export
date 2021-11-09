@@ -1,7 +1,6 @@
 # Standard library imports
 from copy import deepcopy
 import json
-import pprint
 from time import sleep
 from os import path
 
@@ -47,7 +46,7 @@ def main():
 
     # Checking for child collections
     if len(zot.collections_sub(coll_key)) > 0:
-        print(user_messages['err_child_colls'].format(coll_name=coll_name))
+        print(user_messages['err_child_cols'].format(coll_name=coll_name))
         sleep(EXIT_TIMER)
         exit(1)
 
@@ -63,17 +62,7 @@ def main():
         coll_entries.append(Entry(config, coll[i]))
         i += 1
 
-    build_docx(coll_entries, coll_name, config['saving_location'], config['output_formatting'], locale['formatting'])
-
-    # TODO: Check out the entry attributes order (list of floats), positions (dict) and data (dict)
-    """
-    Pseudo-code:
-    
-    funtion create document:
-        for element in order:
-            add paragraph: to_print <- get data (key = ( positions (key = (element from order))))
-        
-    """
+    build_docx(coll_entries, coll_name, config['saving_location'], config['output_formatting'], formatting)
 
 
 # = = = = CLASSES = = = =
@@ -119,15 +108,15 @@ class Entry:
             contractor_list.append(contractor['name'])
         self.data['contractors'] = contractor_list
 
-    def path_item(self, item, path):
-        """Recursively to the bottom of a path (array) to retrieve a dict item"""
+    def path_item(self, item, item_path):
+        """Recurse to the bottom of a path (array) to retrieve a dict item"""
         # Exit condition
-        if len(path) == 0:
+        if len(item_path) == 0:
             return item
 
         # Recursion logic
-        item = item.get(path.pop(0))
-        return self.path_item(item, path)
+        item = item.get(item_path.pop(0))
+        return self.path_item(item, item_path)
 
     @staticmethod
     def process_info_str(info_str, kv_delimiter='=', item_delimiter=';'):
@@ -217,7 +206,6 @@ def get_config(filename):
         print(f"'{filename}' not found in the execution directory. A blank file was created. Consult documentation.")
         sleep(EXIT_TIMER)
         exit(1)
-
 
     # assert isinstance(config, dict)
     return config
