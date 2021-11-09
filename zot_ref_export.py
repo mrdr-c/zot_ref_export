@@ -62,7 +62,12 @@ def main():
         coll_entries.append(Entry(config, coll[i]))
         i += 1
 
-    build_docx(coll_entries, coll_name, config['saving_location'], config['output_formatting'], formatting)
+    build_docx(coll_entries,
+               coll_name,
+               config['saving_location'],
+               config['output_formatting'],
+               formatting,
+               user_messages)
 
 
 # = = = = CLASSES = = = =
@@ -139,7 +144,7 @@ class Entry:
 
 # = = = = FUNCTIONS = = = = 
 
-def build_docx(entries_list, document_name, saving_location, formatting, locale_formatting):
+def build_docx(entries_list, document_name, saving_location, formatting, locale_formatting, user_messages):
     """Builds document from entries list"""
     # TODO: refactor this into a modular, flexible behaviour defined within config.json
     #   - Define a title field as either None or a name to be found in locale.json
@@ -180,10 +185,12 @@ def build_docx(entries_list, document_name, saving_location, formatting, locale_
         document.save(path.join(path.expanduser(saving_location), f'{document_name}.docx'))
     # Catching error caused by opened document
     except PermissionError:
-        print(f"Please close opened document '{document_name}.docx'")
+        print(user_messages['err_opened_file'].format(filename=document_name))
         sleep(EXIT_TIMER)
         exit(1)
 
+    print(user_messages['success'].format(filename=document_name, filepath=saving_location))
+    sleep(EXIT_TIMER)
     return None
 
 
