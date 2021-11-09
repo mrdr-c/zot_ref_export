@@ -206,8 +206,35 @@ def get_config(filename):
         empty_config = {'library_id': None,
                         'library_type': None,
                         'api_key': None,
-                        'locale': None
+                        'locale': None,
+                        'saving_location': '~/Downloads',
+                        'fields_to_fetch': {
+                            'title': {
+                                'path': ['data', 'title'],
+                                'position': 1
+                            },
+                            "contractors": {
+                                'path': ['data', 'creators'],
+                                'position': 2
+                            },
+                            'client': {
+                                'path': ['data', 'publisher'],
+                                'position': 3
+                            },
+                            'description': {
+                                'path': ['data', 'abstractNote'],
+                                'position': 5
+                            },
+                            'info_string': {
+                                'path': ['data', 'extra'],
+                                'position': 4
+                            }
+                        },
+                        'output_formatting': {
+                            'title_heading_lvl': 3
                         }
+                        }
+
         with open(filename, 'w') as f:
             f.write(json.dumps(empty_config))
         print(f"'{filename}' not found in the execution directory. A blank file was created. Consult documentation.")
