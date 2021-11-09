@@ -8,10 +8,8 @@
     "err_ordering_input": "The given element order could not be interpreted. Use integers or floats with decimal delimiter '.'."
     },
     "formatting": {
-      "ed": "ed.",
-      "eds": "eds.",
-      "in": "in",
-      "pg": "p."
+      "contractors": "contractors",
+      "client": "client"
     }
   },
   "de": {
@@ -23,10 +21,8 @@
       "err_ordering_input": "Die angegebene Anordnung der Elemente konnte nicht interpretiert werden. Integer oder Floats mit Dezimalzeichen '.' benutzen."
     },
     "formatting": {
-      "ed": "Hrsg.",
-      "eds": "Hrsg.",
-      "in": "in",
-      "pg": "S."
+      "contractors": "Auftragnehmer:innen",
+      "client": "Auftraggeber:in"
     }
   }
 }

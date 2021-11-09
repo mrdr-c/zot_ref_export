@@ -3,6 +3,7 @@ from copy import deepcopy
 import json
 import pprint
 from time import sleep
+from os import path
 
 # 3rd-party package imports
 from docx import Document
@@ -62,8 +63,7 @@ def main():
         coll_entries.append(Entry(config, coll[i]))
         i += 1
 
-
-    build_docx(coll_entries, 'whatever', 'whateveras', 'digga')
+    build_docx(coll_entries, coll_name, config['saving_location'], config['output_formatting'], locale['formatting'])
 
     # TODO: Check out the entry attributes order (list of floats), positions (dict) and data (dict)
     """
@@ -74,6 +74,7 @@ def main():
             add paragraph: to_print <- get data (key = ( positions (key = (element from order))))
         
     """
+
 
 # = = = = CLASSES = = = =
 
@@ -149,31 +150,58 @@ class Entry:
 
 # = = = = FUNCTIONS = = = = 
 
-def build_docx(entries_list, document_name, saving_location, formatting):
+def build_docx(entries_list, document_name, saving_location, formatting, locale_formatting):
     """Builds document from entries list"""
+    # TODO: refactor this into a modular, flexible behaviour defined within config.json
+    #   - Define a title field as either None or a name to be found in locale.json
+    #   - Make it deal with dicts and lists in a smart way
+    #   - Handle singular and plural forms where applicable
 
     document = Document()
 
-
-    print(entries_list)
-    print(len(entries_list))
     for entry in entries_list:
-        print(entry.order)
         for ordinal in entry.order:
-            print('ordinal: ', ordinal)
-            print('entry.positions[ordinal]: ', entry.positions[ordinal])
-            print('entry.data[entry.positions[ordinal]]: ', entry.data[entry.positions[ordinal]])
-            content = deepcopy(entry.data[entry.positions[ordinal]])
-            print(content)
+            field_name = entry.positions[ordinal]
+            content = deepcopy(entry.data[field_name])
 
-    return None
+            # Catching None type
+            if content:
+                # Handling title
+                if field_name == 'title':
+                    document.add_heading(content, level=formatting['title_heading_lvl'])
+                # Handling contractors
+                elif field_name == 'contractors':
+                    document.add_paragraph(f'{locale_formatting[field_name]}: {content[0]}')
+                    if len(content) > 1:
+                        for contractor in content[1:]:
+                            document.add_run(f', {contractor}')
+                # Handling info_strings:
+                elif field_name == 'info_string':
+                    for fn, ct in content.items():
+                        document.add_paragraph(f'{fn}: {ct}')
+                # Handling description
+                elif field_name == 'description':
+                    document.add_paragraph(content)
+                # Handling other fields
+                else:
+                    document.add_paragraph(f'{locale_formatting[field_name]}: {content}')
 
     # Saving to downloads with specified name
-    # document.save(path.join(path.expanduser(saving_location), f'{document_name}.docx'))
+    try:
+        document.save(path.join(path.expanduser(saving_location), f'{document_name}.docx'))
+    # Catching error caused by opened document
+    except PermissionError:
+        print(f"Please close opened document '{document_name}.docx'")
+        sleep(EXIT_TIMER)
+        exit(1)
+
+    return None
 
 
 def get_config(filename):
     """Gets the config from the specified file and returns a dict of it. Handles missing file by creating template."""
+    # TODO: Add additional checks to make sure that the fields 'library_id' and 'library_type' have the right format
+    # TODO: Figure out how to store credentials securely
 
     try:
         with open(filename, mode='r', encoding='utf-8') as f:
@@ -190,8 +218,6 @@ def get_config(filename):
         sleep(EXIT_TIMER)
         exit(1)
 
-    # TODO: Add additional checks to make sure that the fields 'library_id' and 'library_type' have the right format
-    # TODO: Figure out how to store credentials securely
 
     # assert isinstance(config, dict)
     return config

@@ -5,11 +5,11 @@ This project aims to create a user-friendly interface that enables retreiving re
 - [ ] ~~Which kind of attachment to use? Potential candidates: `docx`, `md`, Zotero notes format (whatever that is...)~~
 - [ ] How to deal with templates? *- what did you mean by that?*
 - [x] Specify which information is relevant for references
-- [ ] Figure out how to store and retrieve the zotero item fields flexibly
+- [x] Figure out how to store and retrieve the zotero item fields flexibly
   - [x] Make sure that the user can specify the order of the fields in the document to be created
   - [x] Store this information in the config file
-- [ ] Read up on docx-handling
-- [ ] Read up on PyInstaller-wrapping everything
+- [x] Read up on docx-handling
+- [x] Read up on PyInstaller-wrapping everything
 
 ## Requirements
 main.py requires a file named `config.json` with the following info:
