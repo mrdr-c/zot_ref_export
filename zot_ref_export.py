@@ -165,10 +165,13 @@ def build_docx(entries_list, document_name, saving_location, formatting, locale_
                     document.add_heading(content, level=formatting['title_heading_lvl'])
                 # Handling contractors
                 elif field_name == 'contractors':
-                    document.add_paragraph(f'{locale_formatting[field_name]}: {content[0]}')
                     if len(content) > 1:
-                        for contractor in content[1:]:
-                            document.add_run(f', {contractor}')
+                        p = document.add_paragraph(f'{locale_formatting[field_name]}:\r')
+                        for contractor in content:
+                            print(contractor)
+                            p.add_run(f',\r{contractor}')
+                    else:
+                        document.add_paragraph(f'{locale_formatting[field_name]}: {content[0]}')
                 # Handling info_strings:
                 elif field_name == 'info_string':
                     for fn, ct in content.items():
