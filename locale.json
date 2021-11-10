@@ -5,8 +5,10 @@
     "err_no_coll_found": "No collection named '{coll_name}' found.",
     "err_ambiguous_term": "Your search term '{coll_name}' is ambiguous as {len_col_meta} collections were found. Consider renaming the collection you want to retrieve and/or use a different search term.",
     "err_child_cols": "The collection '{coll_name}' has child collections, which are not (yet) supported.",
-    "err_ordering_input": "The given element order could not be interpreted. Use integers or floats with decimal delimiter '.'.",
+    "err_ordering_input": "The given element order could not be interpreted. Use integers.",
     "err_opened_file": "Please close opened document '{filename}.docx' first.",
+    "err_info_str": "The info string (contained in field 'extra') of reference '{title}' lacks at least one delimiter ('{kv_delimiter}').",
+    "err_author_field": "Make sure the author field(s) of reference '{title}' is (are) set to one field.",
     "success": "Successfully built '{filename}.docx' and saved it to '{filepath}'."
     },
     "formatting": {
@@ -20,8 +22,10 @@
       "err_no_coll_found": "Es wurde keine Sammlung '{coll_name}' gefunden.",
       "err_ambiguous_term": "Der Suchbegriff '{coll_name}' ist mehrdeutig: es wurden {len_coll_meta} Sammlungen gefunden. Benennen Sie die Sammlung um und/oder verwenden Sie einen anderen Suchbegriff.",
       "err_child_cols": "Die Sammlung '{coll_name}' hat Untersammlungen. Diese werden (noch) nicht unterstützt.",
-      "err_ordering_input": "Die angegebene Anordnung der Elemente konnte nicht interpretiert werden. Integer oder Floats mit Dezimalzeichen '.' benutzen.",
+      "err_ordering_input": "Die angegebene Anordnung der Elemente konnte nicht interpretiert werden. Integer benutzen.",
       "err_opened_file": "Bitte Dokument '{filename}.docx' zunächst schließen.",
+      "err_info_str": "Im Info-String (Feld 'Extra') der Referenz '{title}' fehlt mindestens ein Trennzeichen ('{kv_delimiter}').",
+      "err_author_field": "Das Autor-Feld (bzw. die Felder) der Referenz '{title}' muss (müssen) als Einzelfeld(er) angelegt werden.",
       "success": "Datei '{filename}.docx' wurde erfolgreich erstellt und in '{filepath}' abgelegt."
     },
     "formatting": {

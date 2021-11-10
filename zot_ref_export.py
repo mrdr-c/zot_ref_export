@@ -59,7 +59,7 @@ def main():
     coll_entries = list()
     i = 0
     while i < len(coll):
-        coll_entries.append(Entry(config, coll[i]))
+        coll_entries.append(Entry(config, coll[i], user_messages))
         i += 1
 
     build_docx(coll_entries,
@@ -77,7 +77,17 @@ class Entry:
     Pass a config dict and a raw entry dict to it.
     """
 
-    def __init__(self, config, raw_entry):
+    def __init__(self, config, raw_entry, user_messages):
+        # Saving user messages
+        self.user_messages = user_messages
+
+        # Trying to get the exit timer global variable
+        global EXIT_TIMER
+        if EXIT_TIMER:
+            self.exit_timer = EXIT_TIMER
+        else:
+            self.exit_timer = 3
+
         # Getting the fields to fetch
         fetch = dict()
         for field in config['fields_to_fetch']:
@@ -110,7 +120,13 @@ class Entry:
         # Turning the contractors dict list into a list
         contractor_list = list()
         for contractor in self.data['contractors']:
-            contractor_list.append(contractor['name'])
+            # Catching split author field(s)
+            try:
+                contractor_list.append(contractor['name'])
+            except KeyError:
+                print(self.user_messages['err_author_field'].format(title=self.data['title']))
+                sleep(self.exit_timer)
+                exit(1)
         self.data['contractors'] = contractor_list
 
     def path_item(self, item, item_path):
@@ -123,23 +139,33 @@ class Entry:
         item = item.get(item_path.pop(0))
         return self.path_item(item, item_path)
 
-    @staticmethod
-    def process_info_str(info_str, kv_delimiter='=', item_delimiter=';'):
+    def process_info_str(self, info_str, kv_delimiter='=', item_delimiter=';'):
         """Takes the info string and turns it into a dict"""
-        # splitting string items
-        items = info_str.replace('\n', '').split(item_delimiter)
-
-        # splitting items into key/value pairs
-        items_dict = dict()
-        for item in items:
-            k, v = item.split(kv_delimiter)
-            v = v.strip()
-            # Turning empty and 'none' strings into None type
-            if v.lower() in ['none', '']:
-                v = None
-            items_dict[k.strip()] = v
-
-        return items_dict
+        # Handling empty string / None type
+        if info_str:
+            # splitting string items
+            items = info_str.replace('\n', '').split(item_delimiter)
+            # splitting items into key/value pairs
+            items_dict = dict()
+            for item in items:
+                # Catching empty string from trailing delimiter
+                if item.strip():
+                    # Catching a missing kv_delimiter in the info string
+                    try:
+                        k, v = item.split(kv_delimiter)
+                        v = v.strip()
+                    except ValueError:
+                        print(item)
+                        print(self.user_messages['err_info_str'].format(kv_delimiter=kv_delimiter, title=self.data['title']))
+                        sleep(self.exit_timer)
+                        exit(1)
+                    # Turning empty and 'none' strings into None type
+                    if v.lower() in ['none', '']:
+                        v = None
+                    items_dict[k.strip()] = v
+            return items_dict
+        else:
+            return None
 
 
 # = = = = FUNCTIONS = = = = 
@@ -167,8 +193,8 @@ def build_docx(entries_list, document_name, saving_location, formatting, locale_
                 elif field_name == 'contractors':
                     if len(content) > 1:
                         p = document.add_paragraph(f'{locale_formatting[field_name]}:\r')
-                        for contractor in content:
-                            print(contractor)
+                        p.add_run(f'{content[0]}')
+                        for contractor in content[1:]:
                             p.add_run(f',\r{contractor}')
                     else:
                         document.add_paragraph(f'{locale_formatting[field_name]}: {content[0]}')
