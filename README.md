@@ -1,6 +1,7 @@
 # Zotero references script (and app)
 This project aims to create a flexible, minimalistic CL-interface that enables retrieving reference collections from Zotero
 and pasting them into a docx file. It is also my final project for [CS50](https://cs50.harvard.edu/x/2021/), an incredible and free course on computer science I can highly recommend.
+Find a short demo video [here](https://youtu.be/3eVLcyNsKpE), at YouTube.
 At this stage, the tool is far from complete, but it already does what it's supposed to do. Find the project on github at [rrodorr/zot_ref_export](https://github.com/rrodorr/zot_ref_export).
 
 ## What is a 'reference collection'?
